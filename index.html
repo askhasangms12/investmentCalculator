@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -168,6 +168,104 @@
 
           breakdownHTML += `</tbody></table>`;
           document.getElementById('yearlyBreakdown').innerHTML = breakdownHTML;
+      }
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Previous head content remains the same -->
+    <style>
+      /* Previous styles remain the same */
+      .currency {
+        font-family: Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Previous HTML content remains the same until the script -->
+
+    <script>
+      function formatPKR(amount) {
+        return amount.toLocaleString('en-PK', {
+          style: 'currency',
+          currency: 'PKR',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function calculateInvestment() {
+        // Get input values (previous code remains the same)
+
+        // Validate inputs (previous code remains the same)
+
+        let totalAmount = 0;
+        let currentMonthlyInvestment = x;
+        let yearlyResults = [];
+
+        for (let year = 1; year <= c; year++) {
+          const yearlyInvestment = currentMonthlyInvestment * 12;
+          totalAmount = totalAmount * (1 + y);
+          totalAmount += yearlyInvestment * (1 + y / 2);
+
+          yearlyResults.push({
+            year,
+            monthlyInvestment: currentMonthlyInvestment,
+            yearlyInvestment,
+            totalAmount: totalAmount,
+          });
+
+          currentMonthlyInvestment *= 1 + z;
+        }
+
+        // Display results with PKR formatting
+        document.getElementById('result').innerHTML = `
+                <h3>Final Result</h3>
+                <p>After <strong>${c} years</strong>, with an initial monthly investment of 
+                <strong>${formatPKR(x)}</strong>, increasing by <strong>${(
+          z * 100
+        ).toFixed(1)}%</strong> annually, 
+                and earning <strong>${(y * 100).toFixed(
+                  1
+                )}%</strong> annual return:</p>
+                <p class="currency"><strong>Total Accumulated Amount: ${formatPKR(
+                  totalAmount
+                )}</strong></p>
+            `;
+
+        // Display yearly breakdown with PKR formatting
+        let breakdownHTML = `<h3>Yearly Breakdown</h3><table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Monthly Investment</th>
+                        <th>Yearly Investment</th>
+                        <th>Total Accumulated</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        yearlyResults.forEach((result) => {
+          breakdownHTML += `
+                    <tr>
+                        <td>${result.year}</td>
+                        <td class="currency">${formatPKR(
+                          result.monthlyInvestment
+                        )}</td>
+                        <td class="currency">${formatPKR(
+                          result.yearlyInvestment
+                        )}</td>
+                        <td class="currency">${formatPKR(
+                          result.totalAmount
+                        )}</td>
+                    </tr>`;
+        });
+
+        breakdownHTML += `</tbody></table>`;
+        document.getElementById('yearlyBreakdown').innerHTML = breakdownHTML;
       }
     </script>
   </body>
