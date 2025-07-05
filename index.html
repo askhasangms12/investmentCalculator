@@ -1,97 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Previous head content remains the same -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Growth Calculator</title>
     <style>
-      /* Previous styles remain the same */
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .input-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f8f8;
+        border-radius: 5px;
+      }
+      .yearly-breakdown {
+        margin-top: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: right;
+      }
+      th {
+        background-color: #f2f2f2;
+        text-align: center;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
       .currency {
         font-family: Arial, sans-serif;
       }
     </style>
-  </head>
-  <body>
-    <!-- Previous HTML content remains the same until the script -->
+</head>
+<body>
+    <h1>Investment Growth Calculator</h1>
+
+    <div class="input-group">
+      <label for="initialInvestment">Monthly Investment Amount (x):</label>
+      <input type="number" id="initialInvestment" value="1000" />
+    </div>
+
+    <div class="input-group">
+      <label for="annualReturn">Annual Return Percentage (y%):</label>
+      <input type="number" id="annualReturn" value="10" step="0.1" />
+    </div>
+
+    <div class="input-group">
+      <label for="investmentIncrease">Annual Investment Increase Percentage (z%):</label>
+      <input type="number" id="investmentIncrease" value="5" step="0.1" />
+    </div>
+
+    <div class="input-group">
+      <label for="years">Number of Years (c):</label>
+      <input type="number" id="years" value="10" />
+    </div>
+
+    <button onclick="calculateInvestment()">Calculate</button>
+
+    <div id="result"></div>
+    <div id="yearlyBreakdown" class="yearly-breakdown"></div>
 
     <script>
       function formatPKR(amount) {
-        return amount.toLocaleString('en-PK', {
-          style: 'currency',
-          currency: 'PKR',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
+          return amount.toLocaleString('en-PK', {
+              style: 'currency',
+              currency: 'PKR',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+          });
       }
 
       function calculateInvestment() {
-        // Get input values (previous code remains the same)
+          // Get input values
+          const x = parseFloat(document.getElementById('initialInvestment').value);
+          const y = parseFloat(document.getElementById('annualReturn').value) / 100;
+          const z = parseFloat(document.getElementById('investmentIncrease').value) / 100;
+          const c = parseInt(document.getElementById('years').value);
 
-        // Validate inputs (previous code remains the same)
+          // Validate inputs
+          if (isNaN(x) || isNaN(y) || isNaN(z) || isNaN(c) || x <= 0 || c <= 0) {
+              document.getElementById('result').innerHTML =
+                  '<p style="color: red;">Please enter valid positive numbers for all fields.</p>';
+              return;
+          }
 
-        let totalAmount = 0;
-        let currentMonthlyInvestment = x;
-        let yearlyResults = [];
+          let totalAmount = 0;
+          let currentMonthlyInvestment = x;
+          let yearlyResults = [];
 
-        for (let year = 1; year <= c; year++) {
-          const yearlyInvestment = currentMonthlyInvestment * 12;
-          totalAmount = totalAmount * (1 + y);
-          totalAmount += yearlyInvestment * (1 + y / 2);
+          for (let year = 1; year <= c; year++) {
+              const yearlyInvestment = currentMonthlyInvestment * 12;
+              totalAmount = totalAmount * (1 + y);
+              totalAmount += yearlyInvestment * (1 + y/2);
 
-          yearlyResults.push({
-            year,
-            monthlyInvestment: currentMonthlyInvestment,
-            yearlyInvestment,
-            totalAmount: totalAmount,
+              yearlyResults.push({
+                  year,
+                  monthlyInvestment: currentMonthlyInvestment,
+                  yearlyInvestment,
+                  totalAmount: totalAmount
+              });
+
+              currentMonthlyInvestment *= (1 + z);
+          }
+
+          // Display results with PKR formatting
+          document.getElementById('result').innerHTML = `
+              <h3>Final Result</h3>
+              <p>After <strong>${c} years</strong>, with an initial monthly investment of 
+              <strong>${formatPKR(x)}</strong>, increasing by <strong>${(z*100).toFixed(1)}%</strong> annually, 
+              and earning <strong>${(y*100).toFixed(1)}%</strong> annual return:</p>
+              <p class="currency"><strong>Total Accumulated Amount: ${formatPKR(totalAmount)}</strong></p>
+          `;
+
+          // Display yearly breakdown with PKR formatting
+          let breakdownHTML = `<h3>Yearly Breakdown</h3><table>
+              <thead>
+                  <tr>
+                      <th>Year</th>
+                      <th>Monthly Investment</th>
+                      <th>Yearly Investment</th>
+                      <th>Total Accumulated</th>
+                  </tr>
+              </thead>
+              <tbody>`;
+
+          yearlyResults.forEach(result => {
+              breakdownHTML += `
+                  <tr>
+                      <td>${result.year}</td>
+                      <td class="currency">${formatPKR(result.monthlyInvestment)}</td>
+                      <td class="currency">${formatPKR(result.yearlyInvestment)}</td>
+                      <td class="currency">${formatPKR(result.totalAmount)}</td>
+                  </tr>`;
           });
 
-          currentMonthlyInvestment *= 1 + z;
-        }
-
-        // Display results with PKR formatting
-        document.getElementById('result').innerHTML = `
-                <h3>Final Result</h3>
-                <p>After <strong>${c} years</strong>, with an initial monthly investment of 
-                <strong>${formatPKR(x)}</strong>, increasing by <strong>${(
-          z * 100
-        ).toFixed(1)}%</strong> annually, 
-                and earning <strong>${(y * 100).toFixed(
-                  1
-                )}%</strong> annual return:</p>
-                <p class="currency"><strong>Total Accumulated Amount: ${formatPKR(
-                  totalAmount
-                )}</strong></p>
-            `;
-
-        // Display yearly breakdown with PKR formatting
-        let breakdownHTML = `<h3>Yearly Breakdown</h3><table>
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Monthly Investment</th>
-                        <th>Yearly Investment</th>
-                        <th>Total Accumulated</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-        yearlyResults.forEach((result) => {
-          breakdownHTML += `
-                    <tr>
-                        <td>${result.year}</td>
-                        <td class="currency">${formatPKR(
-                          result.monthlyInvestment
-                        )}</td>
-                        <td class="currency">${formatPKR(
-                          result.yearlyInvestment
-                        )}</td>
-                        <td class="currency">${formatPKR(
-                          result.totalAmount
-                        )}</td>
-                    </tr>`;
-        });
-
-        breakdownHTML += `</tbody></table>`;
-        document.getElementById('yearlyBreakdown').innerHTML = breakdownHTML;
+          breakdownHTML += `</tbody></table>`;
+          document.getElementById('yearlyBreakdown').innerHTML = breakdownHTML;
       }
+
+      // Initialize the calculator when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+          calculateInvestment();
+      });
     </script>
-  </body>
+</body>
 </html>
